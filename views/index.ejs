@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+    <body>
+        <select id="files-list" multiple style="height: 100px;">
+            <% var i; for (i = 0; i < files.length; ++i) { %>
+                <option><%= files[i] %></option>
+            <% } %>
+        </select>
+        <hr>
+        <table>
+            <tr>
+                <td><input type="text" name="northwest"></td>
+                <td></td>
+                <td><input type="text" name="northeast"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="center"></td>
+                <td><img id="the-image" style="height: 400px;"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="southwest"></td>
+                <td></td>
+                <td><input type="text" name="southeast"></td>
+            </tr>
+        </table>
+    </body>
+    
+    <script src="http://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+
+    <script>
+        jQuery(document).ready(function() {
+            jQuery("#files-list").change(function() {
+                var file = jQuery(this).val();
+                jQuery("#the-image").attr("src", "inputimages/" + file);
+            });
+        });
+    </script>
+
+</html>
