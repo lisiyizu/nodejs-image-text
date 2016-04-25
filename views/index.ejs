@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        
+        <title>Images</title>
     </head>
     <body>
-        <select id="files-list" multiple style="height: 100px;">
-            <% var i; for (i = 0; i < files.length; ++i) { %>
-                <option><%= files[i] %></option>
-            <% } %>
-        </select>
+        <div id="files-container">
+        </div>
         <hr>
+        <input id="file-name" type="hidden">
         <table>
             <tr>
                 <td><input type="text" name="northwest"></td>
@@ -27,15 +25,56 @@
                 <td><input type="text" name="southeast"></td>
             </tr>
         </table>
+        <hr>
+        <input id="apply-text" type="button" value="Apply Text">
     </body>
     
-    <script src="http://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
 
     <script>
         jQuery(document).ready(function() {
-            jQuery("#files-list").change(function() {
-                var file = jQuery(this).val();
-                jQuery("#the-image").attr("src", "inputimages/" + file);
+            jQuery("#files-container").on("click", ".input-file-link", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var fileName = jQuery(this).data("file-name");
+                jQuery("#the-image").attr("src", "inputimages/" + fileName);
+                jQuery("#file-name").val(fileName);
+            });
+            
+            function populateFiles() {
+                jQuery.ajax({
+                    type: "get",
+                    url: "/index/get-files",
+                    dataType: "html",
+                    cache: false
+                }).done(function(result) {
+                    jQuery("#files-container").html(result);
+                });
+            }
+            populateFiles();
+            
+            jQuery("#apply-text").click(function() {
+                var nw = jQuery("[name=northwest]").val();
+                var ne = jQuery("[name=northeast]").val();
+                var sw = jQuery("[name=southwest]").val();
+                var se = jQuery("[name=southeast]").val();
+                var center = jQuery("[name=center]").val();
+                jQuery.ajax({
+                    type: "post",
+                    url: "/index/post-file",
+                    dataType: "json",
+                    data: {
+                        fileName: jQuery("#file-name").val(),
+                        northwest: nw,
+                        northeast: ne,
+                        southwest: sw,
+                        southeast: se,
+                        center: center
+                    }
+                }).done(function(result) {
+                    populateFiles();
+                });
             });
         });
     </script>

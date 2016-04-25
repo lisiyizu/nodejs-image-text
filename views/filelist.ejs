@@ -1,0 +1,14 @@
+<div style="height: 150px; width: 50%; border: 1px solid #000; overflow-y: scroll;">
+    <ul>
+        <% files.forEach(function(file) { %>
+            <li>
+                <% if (file.isDone) { %>
+                    (DONE)
+                <% } %>
+                <a class="input-file-link" href="#" data-file-name="<%= file.fileName %>">
+                    <%= file.fileName %>
+                </a>
+            </li>
+        <% }); %>
+    </ul>
+</div>
