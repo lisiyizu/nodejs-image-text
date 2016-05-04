@@ -7,22 +7,45 @@
         <div id="files-container">
         </div>
         <hr>
-        <input id="file-name" type="hidden">
+        <div>
+            File Name: <input id="file-name" disabled><br>
+            Image Date: <input id="file-date" disabled>
+        </div>
         <table>
             <tr>
-                <td><input type="text" name="northwest"></td>
+                <td>
+                    <input type="text" name="northwest">
+                    <input type="checkbox" id="northwest-date">
+                    <label for="northwest-date">Date</label>
+                </td>
                 <td></td>
-                <td><input type="text" name="northeast"></td>
+                <td>
+                    <input type="text" name="northeast">
+                    <input type="checkbox" id="northeast-date">
+                    <label for="northeast-date">Date</label>
+                </td>
             </tr>
             <tr>
-                <td><input type="text" name="center"></td>
+                <td>
+                    <input type="text" name="center">
+                    <input type="checkbox" id="center-date">
+                    <label for="center-date">Date</label>
+                </td>
                 <td><img id="the-image" style="height: 400px;"></td>
                 <td></td>
             </tr>
             <tr>
-                <td><input type="text" name="southwest"></td>
+                <td>
+                    <input type="text" name="southwest">
+                    <input type="checkbox" name="southwest-date">
+                    <label for="southwest-date">Date</label>
+                </td>
                 <td></td>
-                <td><input type="text" name="southeast"></td>
+                <td>
+                    <input type="text" name="southeast">
+                    <input type="checkbox" name="southeast-date">
+                    <label for="southeast-date">Date</label>
+                </td>
             </tr>
         </table>
         <hr>
@@ -37,10 +60,40 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
+                jQuery("#file-date").val("Loading...");
+                markDateFields();
+                
                 var fileName = jQuery(this).data("file-name");
                 jQuery("#the-image").attr("src", "inputimages/" + fileName);
                 jQuery("#file-name").val(fileName);
+                jQuery.ajax({
+                    type: "post",
+                    url: "/index/get-image-date",
+                    dataType: "json",
+                    data: { fileName: fileName }
+                }).done(function(data, textStatus, jqXHR) {
+                    jQuery("#file-date").val(data);
+                    markDateFields();
+                });
             });
+            
+            function markDateFields() {
+                if (jQuery("[name=northwest-date]").is(":checked")) {
+                    jQuery("[name=northwest]").val(jQuery("#file-date").val());
+                }
+                if (jQuery("[name=northeast-date]").is(":checked")) {
+                    jQuery("[name=northeast]").val(jQuery("#file-date").val());
+                }
+                if (jQuery("[name=southwest-date]").is(":checked")) {
+                    jQuery("[name=southwest]").val(jQuery("#file-date").val());
+                }
+                if (jQuery("[name=southeast-date]").is(":checked")) {
+                    jQuery("[name=southeast]").val(jQuery("#file-date").val());
+                }
+                if (jQuery("[name=center-date]").is(":checked")) {
+                    jQuery("[name=center]").val(jQuery("#file-date").val());
+                }
+            }
             
             function populateFiles() {
                 jQuery.ajax({

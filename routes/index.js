@@ -46,6 +46,13 @@ router.post("/index/post-file", function(req, res, next) {
     });
 });
 
+router.post("/index/get-image-date", function(req, res, next) {
+    var fileName = path.join(inputDir, req.body.fileName);
+    
+    imagetext.getFormattedImageDate(fileName, function(data) {
+        res.json(data);
+    });
+});
 
 router.get("/index/get-files", function(req, res, next) {
     fs.readdir(inputDir, function(err, files) {

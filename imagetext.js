@@ -3,6 +3,7 @@
 var fs = require("fs-extra");
 var imagemagick = require("imagemagick");
 var path = require("path");
+var moment = require("moment");
 
 function getOptions(imageData, source, options) {
 
@@ -70,6 +71,10 @@ function addText(fileName, options, callback) {
 		}
 
 		var imArgs = getOptions(imageData, fileName, options);
+		
+		var dtOrig = imageData && imageData.properties && imageData.properties["exif:datetimeoriginal"];
+		console.log(dtOrig);
+		console.log(JSON.stringify(imageData));
 
 		imagemagick.convert(imArgs, function(err) {
 			if (err) {
@@ -131,7 +136,35 @@ function addAllText(fileName, resultingFileName, textItems, color, callback) {
     fs.copy(fileName, resultingFileName, go);
 }
 
+function getFormattedImageDate(fileName, callback) {
+	imagemagick.identify(fileName, function (err, imageData) {
+		if (err) {
+			throw new Error(err);
+		}
+
+		var dtOrig = imageData && imageData.properties && imageData.properties["exif:datetimeoriginal"];
+		console.log("dtOrig=" + dtOrig);
+		if (dtOrig) {
+			console.log("if");
+			try {
+				var formattedDate = moment(dtOrig, "YYYY:MM:DD HH:mm:ss").format("YYYY-MM-DD HH:mm");
+				console.log("formattedDate=" + formattedDate);
+				if (formattedDate.match(/^\d\d\d\d\-\d\d\-\d\d\ \d\d\:\d\d$/)) {
+					callback(formattedDate);
+				} else {
+					callback(null);
+				}
+			} catch (ex) {
+				callback(null);
+			}
+		} else {
+			callback(null);
+		}
+	});	
+}
+
 exports = module.exports = { 
     addText: addText,
-    addAllText: addAllText 
+    addAllText: addAllText,
+    getFormattedImageDate: getFormattedImageDate
 };
